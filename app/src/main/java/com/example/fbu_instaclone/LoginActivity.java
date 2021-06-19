@@ -7,9 +7,11 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseUser;
 import com.parse.SignUpCallback;
@@ -26,6 +28,10 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        if(ParseUser.getCurrentUser() != null){
+            goToMainActivity();
+        }
 
         btLogin = findViewById(R.id.btLogin);
         btSignup= findViewById(R.id.btSignup);
@@ -51,8 +57,7 @@ public class LoginActivity extends AppCompatActivity {
                         @Override
                         public void done(ParseException e) {
                             if(e == null){
-                                Intent i = new Intent(LoginActivity.this, MainActivity.class);
-                                LoginActivity.this.startActivity(i);
+                                goToMainActivity();
                             }else{
                                 Log.e(TAG, "Exception: " + e.getMessage());
                                 return;
@@ -62,6 +67,37 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
         });
+
+        btLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(TextUtils.isEmpty(etPassword.getText()) == true || TextUtils.isEmpty(etUsername.getText()) == true){
+                    if(TextUtils.isEmpty(etPassword.getText()) == true){
+                        etPassword.setError("Password cannot be empty");
+                    }
+                    if(TextUtils.isEmpty(etUsername.getText()) == true){
+                        etUsername.setError("Username cannot be empty");
+                    }
+                    return;
+                } else {
+                    ParseUser.logInInBackground(etUsername.getText().toString(), etPassword.getText().toString(), new LogInCallback() {
+                        @Override
+                        public void done(ParseUser user, ParseException e) {
+                            if(user != null){
+                                goToMainActivity();
+                            }
+                            else{
+                                Toast.makeText(LoginActivity.this, "Cannot login: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+                }
+            }
+        });
     }
 
+    private void goToMainActivity() {
+        Intent i = new Intent(this, MainActivity.class);
+        startActivity(i);
+    }
 }
