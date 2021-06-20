@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.fbu_instaclone.R;
 import com.example.fbu_instaclone.model.Post;
+import com.parse.ParseUser;
 
 import java.util.List;
 
@@ -72,6 +73,11 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
             Glide.with(context)
                     .load(post.getImage().getUrl())
                     .into(ivPicture);
+
+            Glide.with(context)
+                    .load(ParseUser.getCurrentUser().getParseFile("profilePic").getUrl())
+                    .circleCrop()
+                    .into(ivProfile);
         }
     }
 }
