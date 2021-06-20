@@ -16,6 +16,7 @@ import androidx.fragment.app.FragmentManager;
 
 import com.example.fbu_instaclone.Fragments.HomeFragment;
 import com.example.fbu_instaclone.Fragments.PostFragment;
+import com.example.fbu_instaclone.Fragments.ProfileFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.parse.LogOutCallback;
 import com.parse.ParseException;
@@ -53,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
                         fragment = new PostFragment(context);
                         break;
                     case R.id.action_profile:
-                        // Set new profile fragment
+                        fragment = new ProfileFragment(context);
                         break;
                     default:
                         break;
