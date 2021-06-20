@@ -26,6 +26,7 @@
             android:layout_marginStart="5dp"
             android:layout_marginTop="5dp"
             android:layout_marginEnd="5dp"
+            android:backgroundTint="#38CC4D"
             android:text="TAKE PICTURE" />
 
         <ImageView
@@ -34,11 +35,12 @@
             android:id="@+id/ivPicture"/>
 
         <Button
+            android:id="@+id/btSubmit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/btSubmit"
-            android:text="Submit"
             android:layout_marginStart="5dp"
-            android:layout_marginEnd="5dp"/>
+            android:layout_marginEnd="5dp"
+            android:backgroundTint="#03A9F4"
+            android:text="Submit" />
     </LinearLayout>
 </FrameLayout>
