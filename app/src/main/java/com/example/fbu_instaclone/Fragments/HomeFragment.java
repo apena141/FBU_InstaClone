@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.fbu_instaclone.Adapter.PostAdapter;
 import com.example.fbu_instaclone.R;
@@ -31,6 +32,7 @@ public class HomeFragment extends Fragment {
     List<Post> posts;
     RecyclerView rvPosts;
     PostAdapter adapter;
+    SwipeRefreshLayout swipeContainer;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -50,6 +52,19 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         rvPosts = view.findViewById(R.id.rvPosts);
+        swipeContainer = view.findViewById(R.id.swipeContainer);
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                queryPost();
+            }
+        });
+        // Configure the refreshing colors
+        swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
+
 
         posts = new ArrayList<>();
         adapter = new PostAdapter(context, posts);
@@ -57,12 +72,14 @@ public class HomeFragment extends Fragment {
         rvPosts.setLayoutManager(new LinearLayoutManager(context));
         rvPosts.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL));
         rvPosts.setAdapter(adapter);
+
         queryPost();
     }
 
     public void queryPost(){
         ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
         query.include(Post.KEY_USER);
+        query.orderByDescending("createdAt");
         query.findInBackground(new FindCallback<Post>() {
             @Override
             public void done(List<Post> objects, ParseException e) {
@@ -71,8 +88,10 @@ public class HomeFragment extends Fragment {
                     return;
                 }
                 else{
+                    posts.clear();
                     posts.addAll(objects);
                     adapter.notifyDataSetChanged();
+                    swipeContainer.setRefreshing(false);
                 }
             }
         });
