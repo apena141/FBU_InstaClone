@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.fbu_instaclone.Adapter.PostAdapter;
+import com.example.fbu_instaclone.EndlessRecyclerViewScrollListener;
 import com.example.fbu_instaclone.R;
 import com.example.fbu_instaclone.model.Post;
 import com.parse.FindCallback;
@@ -28,11 +29,13 @@ import java.util.List;
 public class HomeFragment extends Fragment {
 
     public static final String TAG = "HomeFragment";
+    int lastPost;
     Context context;
     List<Post> posts;
     RecyclerView rvPosts;
     PostAdapter adapter;
     SwipeRefreshLayout swipeContainer;
+    EndlessRecyclerViewScrollListener scrollListener;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -65,14 +68,22 @@ public class HomeFragment extends Fragment {
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
 
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
+
+        scrollListener = new EndlessRecyclerViewScrollListener(linearLayoutManager) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                loadMorePosts(totalItemsCount);
+            }
+        };
 
         posts = new ArrayList<>();
         adapter = new PostAdapter(context, posts);
-
-        rvPosts.setLayoutManager(new LinearLayoutManager(context));
+        rvPosts.setLayoutManager(linearLayoutManager);
         rvPosts.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL));
         rvPosts.setAdapter(adapter);
-
+        rvPosts.addOnScrollListener(scrollListener);
+        lastPost = 0;
         queryPost();
     }
 
@@ -89,10 +100,35 @@ public class HomeFragment extends Fragment {
                     return;
                 }
                 else{
+                    lastPost = objects.size();
                     posts.clear();
                     posts.addAll(objects);
                     adapter.notifyDataSetChanged();
                     swipeContainer.setRefreshing(false);
+                }
+            }
+        });
+    }
+
+    public void loadMorePosts(int offset){
+        ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
+        query.include(Post.KEY_USER);
+        query.setLimit(20);
+        query.setSkip(offset);
+        query.orderByDescending(Post.KEY_CREATED_AT);
+        query.findInBackground(new FindCallback<Post>() {
+            @Override
+            public void done(List<Post> objects, ParseException e) {
+                if(e != null) {
+                    Log.e(TAG, "Exception: " + e.getMessage());
+                    return;
+                }
+                else{
+                    posts.addAll(posts.size(), objects);
+                    // 2. Notify the adapter of the update
+                    adapter.notifyItemRangeInserted(offset, posts.size() - 1);
+                    // 3. Reset endless scroll listener when performing a new search
+                    scrollListener.resetState();
                 }
             }
         });
