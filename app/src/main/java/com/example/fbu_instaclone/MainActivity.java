@@ -1,9 +1,11 @@
 package com.example.fbu_instaclone;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -15,6 +17,9 @@ import androidx.fragment.app.FragmentManager;
 import com.example.fbu_instaclone.Fragments.HomeFragment;
 import com.example.fbu_instaclone.Fragments.PostFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.parse.LogOutCallback;
+import com.parse.ParseException;
+import com.parse.ParseUser;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -64,6 +69,28 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.logoutItem:
+                ParseUser.logOutInBackground(new LogOutCallback() {
+                    @Override
+                    public void done(ParseException e) {
+                        if(e == null){
+                            Intent i = new Intent(MainActivity.this, LoginActivity.class);
+                            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(i);
+                        }
+                        else{
+                            Log.e(TAG, "Error: " + e.getMessage());
+                        }
+                    }
+                });
+        }
         return true;
     }
 }

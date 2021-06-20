@@ -52,6 +52,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         ImageView ivPicture;
         TextView tvUserhandle;
         TextView tvDescription;
+        TextView tvLikes;
         ImageButton ibLike;
         ImageButton ibComment;
         ImageButton ibSend;
@@ -65,11 +66,13 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
             ibLike = itemView.findViewById(R.id.ibLike);
             ibComment = itemView.findViewById(R.id.ibComment);
             ibSend = itemView.findViewById(R.id.ibSend);
+            tvLikes = itemView.findViewById(R.id.tvLikes);
         }
 
         public void bind(Post post){
             tvDescription.setText(post.getDescription());
             tvUserhandle.setText(post.getUser().getUsername());
+            tvLikes.setText(String.format("%d Likes", post.getLikes()));
             Glide.with(context)
                     .load(post.getImage().getUrl())
                     .into(ivPicture);
