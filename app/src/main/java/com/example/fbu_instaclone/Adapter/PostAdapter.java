@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -49,15 +50,24 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         ImageView ivProfile;
         ImageView ivPicture;
         TextView tvUserhandle;
+        TextView tvDescription;
+        ImageButton ibLike;
+        ImageButton ibComment;
+        ImageButton ibSend;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             ivPicture = itemView.findViewById(R.id.ivPicture);
             ivProfile = itemView.findViewById(R.id.ivProfile);
             tvUserhandle = itemView.findViewById(R.id.tvProfilename);
+            tvDescription = itemView.findViewById(R.id.tvDescription);
+            ibLike = itemView.findViewById(R.id.ibLike);
+            ibComment = itemView.findViewById(R.id.ibComment);
+            ibSend = itemView.findViewById(R.id.ibSend);
         }
 
         public void bind(Post post){
+            tvDescription.setText(post.getDescription());
             tvUserhandle.setText(post.getUser().getUsername());
             Glide.with(context)
                     .load(post.getImage().getUrl())
