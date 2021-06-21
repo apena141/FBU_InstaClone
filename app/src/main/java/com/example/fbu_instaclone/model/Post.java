@@ -18,6 +18,7 @@ public class Post extends ParseObject {
     public static final String KEY_IMAGE = "image";
     public static final String KEY_USER = "user";
     public static final String KEY_LIKES = "likes";
+    public static final String KEY_LIKE_STATUS = "likeStatus";
     public static final String KEY_CREATED_AT = "createdAt";
     private static final int SECOND_MILLIS = 1000;
     private static final int MINUTE_MILLIS = 60 * SECOND_MILLIS;
@@ -57,7 +58,11 @@ public class Post extends ParseObject {
         return getInt(KEY_LIKES);
     }
 
-    public void setLikes(int likes){ put(KEY_DESCRIPTION, likes); }
+    public void setLikes(int likes){ put(KEY_LIKES, likes); }
+
+    public Boolean getLikeStatus(){ return getBoolean(KEY_LIKE_STATUS); }
+
+    public void setLikeStatus(boolean status) { put(KEY_LIKE_STATUS, status); }
 
     public static String getRelativeTimeAgo(String dateStr) {
         SimpleDateFormat sf = new SimpleDateFormat("EEE MMM dd HH:mm:ss ZZZZZ yyyy", Locale.ENGLISH);
