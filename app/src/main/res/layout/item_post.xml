@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginBottom="2dp"
     android:orientation="vertical">
 
     <LinearLayout
@@ -41,13 +42,14 @@
         android:id="@+id/tvLikes"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="27dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="3dp"
         android:textSize="16sp" />
 
     <LinearLayout
+        android:id="@+id/layout_buttons"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/layout_buttons"
         android:orientation="horizontal">
 
         <ImageButton
@@ -80,11 +82,20 @@
         android:id="@+id/tvDescription"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="27dp"
-        android:layout_marginTop="0dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="-8dp"
+        android:layout_marginBottom="0dp"
         android:textSize="20sp"
         tools:text="This is a test caption for my posts on instaclone" />
+
+    <TextView
+        android:id="@+id/tvTimestamp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="0dp"
+        android:layout_marginBottom="5dp"
+        tools:text="2m ago" />
 
 
 </LinearLayout>

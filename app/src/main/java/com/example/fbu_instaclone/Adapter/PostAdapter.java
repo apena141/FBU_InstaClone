@@ -15,6 +15,7 @@ import com.bumptech.glide.Glide;
 import com.example.fbu_instaclone.R;
 import com.example.fbu_instaclone.model.Post;
 
+import java.util.Date;
 import java.util.List;
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
@@ -49,6 +50,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
 
         ImageView ivProfile;
         ImageView ivPicture;
+        TextView tvTimestamp;
         TextView tvUserhandle;
         TextView tvDescription;
         TextView tvLikes;
@@ -66,14 +68,22 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
             ibComment = itemView.findViewById(R.id.ibComment);
             ibSend = itemView.findViewById(R.id.ibSend);
             tvLikes = itemView.findViewById(R.id.tvLikes);
+            tvTimestamp = itemView.findViewById(R.id.tvTimestamp);
         }
 
         public void bind(Post post){
             tvDescription.setText(post.getDescription());
             tvUserhandle.setText(post.getUser().getUsername());
             tvLikes.setText(String.format("%d Likes", post.getLikes()));
+
+            Date date = post.getCreatedAt();
+            String dateStr = Post.getRelativeTimeAgo(date.toString());
+            tvTimestamp.setText(dateStr);
+
             Glide.with(context)
                     .load(post.getImage().getUrl())
+                    .override(410, 250)
+                    .centerCrop()
                     .into(ivPicture);
 
             Glide.with(context)
