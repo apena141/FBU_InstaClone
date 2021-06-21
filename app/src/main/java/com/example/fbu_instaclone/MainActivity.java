@@ -31,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
     Fragment fragment;
     FragmentManager fragmentManager;
     BottomNavigationView bottomNavigationView;
+    public static MenuItem miActionProgressItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +60,6 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case R.id.action_profile:
                         fragment = new ProfileFragment(context);
-                        break;
                     default:
                         break;
                 }
@@ -67,13 +67,19 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
-        // Set default selection
-        bottomNavigationView.setSelectedItemId(R.id.action_home);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
+        miActionProgressItem = menu.findItem(R.id.miActionProgress);
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        // Return to finish
+        miActionProgressItem = menu.findItem(R.id.miActionProgress);
         return true;
     }
 

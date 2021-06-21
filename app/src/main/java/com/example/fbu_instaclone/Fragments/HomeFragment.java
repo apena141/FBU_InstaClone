@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -17,6 +18,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.fbu_instaclone.Adapter.PostAdapter;
 import com.example.fbu_instaclone.EndlessRecyclerViewScrollListener;
+import com.example.fbu_instaclone.MainActivity;
 import com.example.fbu_instaclone.R;
 import com.example.fbu_instaclone.model.Post;
 import com.parse.FindCallback;
@@ -36,6 +38,7 @@ public class HomeFragment extends Fragment {
     PostAdapter adapter;
     SwipeRefreshLayout swipeContainer;
     EndlessRecyclerViewScrollListener scrollListener;
+    MenuItem bar;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -43,6 +46,16 @@ public class HomeFragment extends Fragment {
 
     public HomeFragment(Context context){
         this.context = context;
+    }
+
+    public void showProgressBar() {
+        // Show progress item
+        bar.setVisible(true);
+    }
+
+    public void hideProgressBar() {
+        // Hide progress item
+        bar.setVisible(false);
     }
 
     @Nullable
@@ -54,6 +67,7 @@ public class HomeFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        bar = MainActivity.miActionProgressItem;
         rvPosts = view.findViewById(R.id.rvPosts);
         swipeContainer = view.findViewById(R.id.swipeContainer);
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -88,6 +102,7 @@ public class HomeFragment extends Fragment {
     }
 
     protected void queryPost(){
+        showProgressBar();
         ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
         query.include(Post.KEY_USER);
         query.setLimit(20);
@@ -105,6 +120,7 @@ public class HomeFragment extends Fragment {
                     posts.addAll(objects);
                     adapter.notifyDataSetChanged();
                     swipeContainer.setRefreshing(false);
+                    hideProgressBar();
                 }
             }
         });
