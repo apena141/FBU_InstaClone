@@ -10,6 +10,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -22,6 +23,7 @@ import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 
+import com.example.fbu_instaclone.MainActivity;
 import com.example.fbu_instaclone.R;
 import com.example.fbu_instaclone.model.Post;
 import com.parse.ParseException;
@@ -45,6 +47,7 @@ public class PostFragment extends Fragment {
     Button btSubmit;
     EditText etDescription;
     ImageView ivPicture;
+    MenuItem bar;
 
     public PostFragment(Context context){
         this.context = context;
@@ -63,6 +66,7 @@ public class PostFragment extends Fragment {
     }
 
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        bar = MainActivity.miActionProgressItem;
         btTakepicture = view.findViewById(R.id.btTakePicture);
         btSubmit = view.findViewById(R.id.btSubmit);
         etDescription = view.findViewById(R.id.etDescription);
@@ -93,6 +97,7 @@ public class PostFragment extends Fragment {
     }
 
     private void savePost(String description, ParseUser currentUser) {
+        showProgressBar();
         Post post = new Post();
         post.setDescription(description);
         post.setUser(currentUser);
@@ -100,6 +105,7 @@ public class PostFragment extends Fragment {
         post.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
+                hideProgressBar();
                 if(e != null){
                     Log.e(TAG, e.getMessage());
                     Toast.makeText(context, "Cannot save post: " + e.getMessage(), Toast.LENGTH_LONG).show();
@@ -163,5 +169,15 @@ public class PostFragment extends Fragment {
                 Toast.makeText(context, "Picture wasn't taken!", Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    public void showProgressBar() {
+        // Show progress item
+        bar.setVisible(true);
+    }
+
+    public void hideProgressBar() {
+        // Hide progress item
+        bar.setVisible(false);
     }
 }

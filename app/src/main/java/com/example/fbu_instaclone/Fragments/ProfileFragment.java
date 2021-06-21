@@ -19,6 +19,7 @@ public class ProfileFragment extends HomeFragment {
 
     @Override
     protected void queryPost() {
+        showProgressBar();
         ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
         query.include(Post.KEY_USER);
         query.whereEqualTo(Post.KEY_USER, ParseUser.getCurrentUser());
@@ -36,6 +37,7 @@ public class ProfileFragment extends HomeFragment {
                     posts.addAll(objects);
                     adapter.notifyDataSetChanged();
                     swipeContainer.setRefreshing(false);
+                    hideProgressBar();
                 }
             }
         });
