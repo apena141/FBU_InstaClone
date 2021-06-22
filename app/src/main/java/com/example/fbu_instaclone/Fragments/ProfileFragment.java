@@ -12,12 +12,12 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.bumptech.glide.Glide;
-import com.example.fbu_instaclone.Adapter.PostAdapter;
+import com.example.fbu_instaclone.Adapter.ProfileAdapter;
 import com.example.fbu_instaclone.EndlessRecyclerViewScrollListener;
 import com.example.fbu_instaclone.R;
 import com.example.fbu_instaclone.model.Post;
@@ -36,8 +36,7 @@ public class ProfileFragment extends HomeFragment {
     TextView tvPosts;
     TextView tvFollowing;
     TextView tvFollowers;
-
-
+    ProfileAdapter adapter;
 
     public ProfileFragment(Context context){
         super(context);
@@ -78,14 +77,15 @@ public class ProfileFragment extends HomeFragment {
                 queryPost();
             }
         });
+
         // Configure the refreshing colors
         swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
                 android.R.color.holo_green_light,
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
 
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
-        scrollListener = new EndlessRecyclerViewScrollListener(linearLayoutManager) {
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(context, 2);
+        scrollListener = new EndlessRecyclerViewScrollListener(gridLayoutManager) {
             @Override
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
                 loadMorePosts(totalItemsCount);
@@ -93,9 +93,14 @@ public class ProfileFragment extends HomeFragment {
         };
 
         posts = new ArrayList<>();
-        adapter = new PostAdapter(context, posts);
-        rvPosts.setLayoutManager(linearLayoutManager);
-        rvPosts.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL));
+
+        // Can I add a 3rd parameter here that will indicate if we want to inflate the Grid Layout view
+        // or the linear layout view thats used for the timeline??
+        // Example: adapter = new PostAdapter(context, posts, type)
+        adapter = new ProfileAdapter(context, posts);
+
+        rvPosts.setLayoutManager(gridLayoutManager);
+        rvPosts.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.HORIZONTAL));
         rvPosts.setAdapter(adapter);
         rvPosts.addOnScrollListener(scrollListener);
         lastPost = 0;
