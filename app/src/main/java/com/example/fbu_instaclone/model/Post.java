@@ -20,6 +20,7 @@ public class Post extends ParseObject {
     public static final String KEY_LIKES = "likes";
     public static final String KEY_LIKE_STATUS = "likeStatus";
     public static final String KEY_CREATED_AT = "createdAt";
+    public static final String KEY_PROFILE_PIC = "profilePic";
     private static final int SECOND_MILLIS = 1000;
     private static final int MINUTE_MILLIS = 60 * SECOND_MILLIS;
     private static final int HOUR_MILLIS = 60 * MINUTE_MILLIS;
@@ -46,9 +47,7 @@ public class Post extends ParseObject {
         return getParseUser(KEY_USER);
     }
 
-    public ParseFile getUserProfilePic(){
-        return getParseUser(KEY_USER).getParseFile("profilePic");
-    }
+    public ParseFile getUserProfilePic(){ return getParseUser(KEY_USER).getParseFile("profilePic"); }
 
     public void setUser(ParseUser user){
         put(KEY_USER, user);
