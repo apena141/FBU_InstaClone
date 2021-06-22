@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
                         fragment = new PostFragment(context);
                         break;
                     case R.id.action_profile:
-                        fragment = new ProfileFragment(context);
+                        fragment = new ProfileFragment(context, ParseUser.getCurrentUser());
                     default:
                         break;
                 }

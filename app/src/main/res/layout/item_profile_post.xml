@@ -8,10 +8,11 @@
 
     <ImageView
         android:id="@+id/ivPicture"
-        android:layout_width="215dp"
-        android:layout_height="415dp"
+        android:layout_width="210dp"
+        android:layout_height="410dp"
         tools:layout_editor_absoluteX="102dp"
         tools:layout_editor_absoluteY="27dp"
+        android:scaleType="centerCrop"
         tools:srcCompat="@tools:sample/avatars" />
 
 </RelativeLayout>

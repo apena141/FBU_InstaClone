@@ -11,12 +11,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.fbu_instaclone.App;
+import com.example.fbu_instaclone.Fragments.ProfileFragment;
 import com.example.fbu_instaclone.R;
 import com.example.fbu_instaclone.model.Post;
 
@@ -126,6 +129,15 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
                     .load(post.getUserProfilePic().getUrl())
                     .circleCrop()
                     .into(ivProfile);
+
+            ivProfile.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    AppCompatActivity activity = (AppCompatActivity) context;
+                    Fragment myFragment = new ProfileFragment(context, post.getUser());
+                    activity.getSupportFragmentManager().beginTransaction().replace(R.id.flContainer, myFragment).addToBackStack(null).commit();
+                }
+            });
         }
 
         public void changeLikeButton (boolean likeStatus, Post post){

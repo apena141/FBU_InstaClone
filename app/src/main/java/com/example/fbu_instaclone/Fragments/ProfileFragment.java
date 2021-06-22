@@ -31,6 +31,8 @@ import java.util.List;
 
 public class ProfileFragment extends HomeFragment {
 
+    List<Post> posts;
+    ParseUser user;
     ImageView ivProfile;
     TextView tvHandle;
     TextView tvPosts;
@@ -38,8 +40,9 @@ public class ProfileFragment extends HomeFragment {
     TextView tvFollowers;
     ProfileAdapter adapter;
 
-    public ProfileFragment(Context context){
+    public ProfileFragment(Context context, ParseUser user){
         super(context);
+        this.user = user;
     }
 
     @Nullable
@@ -62,13 +65,13 @@ public class ProfileFragment extends HomeFragment {
 
         ivProfile = view.findViewById(R.id.ivProfile);
         Glide.with(context)
-                .load(ParseUser.getCurrentUser().getParseFile(Post.KEY_PROFILE_PIC).getUrl())
+                .load(user.getParseFile(Post.KEY_PROFILE_PIC).getUrl())
                 .circleCrop()
                 .override(140, 140)
                 .into(ivProfile);
 
         tvHandle = view.findViewById(R.id.tvHandle);
-        tvHandle.setText("@" + ParseUser.getCurrentUser().getUsername());
+        tvHandle.setText("@" + user.getUsername());
 
         swipeContainer = view.findViewById(R.id.swipeContainer);
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -93,10 +96,6 @@ public class ProfileFragment extends HomeFragment {
         };
 
         posts = new ArrayList<>();
-
-        // Can I add a 3rd parameter here that will indicate if we want to inflate the Grid Layout view
-        // or the linear layout view thats used for the timeline??
-        // Example: adapter = new PostAdapter(context, posts, type)
         adapter = new ProfileAdapter(context, posts);
 
         rvPosts.setLayoutManager(gridLayoutManager);
@@ -112,7 +111,7 @@ public class ProfileFragment extends HomeFragment {
         showProgressBar();
         ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
         query.include(Post.KEY_USER);
-        query.whereEqualTo(Post.KEY_USER, ParseUser.getCurrentUser());
+        query.whereEqualTo(Post.KEY_USER, user);
         query.setLimit(20);
         query.orderByDescending(Post.KEY_CREATED_AT);
         query.findInBackground(new FindCallback<Post>() {
