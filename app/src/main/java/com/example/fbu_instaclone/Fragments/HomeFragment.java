@@ -28,7 +28,7 @@ import com.parse.ParseQuery;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements CommentsFragment.NewCommentListener {
 
     public static final String TAG = "HomeFragment";
     int lastPost;
@@ -39,6 +39,7 @@ public class HomeFragment extends Fragment {
     SwipeRefreshLayout swipeContainer;
     EndlessRecyclerViewScrollListener scrollListener;
     MenuItem bar;
+    CommentsFragment.NewCommentListener newCommentListener;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -91,14 +92,26 @@ public class HomeFragment extends Fragment {
             }
         };
 
+
         posts = new ArrayList<>();
-        adapter = new PostAdapter(context, posts);
+        newCommentListener = new CommentsFragment.NewCommentListener() {
+            @Override
+            public void onNewComment(int position, Post post) {
+                posts.remove(position);
+                posts.add(position, post);
+                adapter.notifyItemChanged(position);
+            }
+        };
+
+        adapter = new PostAdapter(context, posts, newCommentListener);
         rvPosts.setLayoutManager(linearLayoutManager);
         rvPosts.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL));
         rvPosts.setAdapter(adapter);
         rvPosts.addOnScrollListener(scrollListener);
+
         lastPost = 0;
         queryPost();
+
     }
 
     protected void queryPost(){
@@ -148,5 +161,12 @@ public class HomeFragment extends Fragment {
                 }
             }
         });
+    }
+
+    @Override
+    public void onNewComment(int position, Post post) {
+        posts.remove(position);
+        posts.add(position, post);
+        adapter.notifyItemChanged(position);
     }
 }

@@ -9,6 +9,7 @@ import com.parse.ParseUser;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.List;
 import java.util.Locale;
 
 @ParseClassName("Post")
@@ -21,11 +22,19 @@ public class Post extends ParseObject {
     public static final String KEY_LIKE_STATUS = "likeStatus";
     public static final String KEY_CREATED_AT = "createdAt";
     public static final String KEY_PROFILE_PIC = "profilePic";
+    public static final String KEY_COMMENTS = "comments";
     private static final int SECOND_MILLIS = 1000;
     private static final int MINUTE_MILLIS = 60 * SECOND_MILLIS;
     private static final int HOUR_MILLIS = 60 * MINUTE_MILLIS;
     private static final int DAY_MILLIS = 24 * HOUR_MILLIS;
 
+    public List<String> getComments(){
+        return getList(KEY_COMMENTS);
+    }
+
+    public void addComments(List<String> comments){
+        put(KEY_COMMENTS, comments);
+    }
 
     public String getDescription(){
         return getString(KEY_DESCRIPTION);

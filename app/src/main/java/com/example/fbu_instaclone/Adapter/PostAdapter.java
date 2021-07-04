@@ -15,10 +15,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.fbu_instaclone.App;
+import com.example.fbu_instaclone.Fragments.CommentsFragment;
+import com.example.fbu_instaclone.Fragments.DetailFragment;
 import com.example.fbu_instaclone.Fragments.ProfileFragment;
 import com.example.fbu_instaclone.R;
 import com.example.fbu_instaclone.model.Post;
@@ -30,10 +34,12 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
 
     Context context;
     List<Post> posts;
+    CommentsFragment.NewCommentListener listener;
 
-    public PostAdapter(Context context, List<Post> posts){
+    public PostAdapter(Context context, List<Post> posts, CommentsFragment.NewCommentListener listener){
         this.context = context;
         this.posts = posts;
+        this.listener = listener;
     }
 
     @NonNull
@@ -65,6 +71,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         ImageButton ibLike;
         ImageButton ibComment;
         ImageButton ibSend;
+        TextView tvComments;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -77,6 +84,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
             ibSend = itemView.findViewById(R.id.ibSend);
             tvLikes = itemView.findViewById(R.id.tvLikes);
             tvTimestamp = itemView.findViewById(R.id.tvTimestamp);
+            tvComments = itemView.findViewById(R.id.commentsLabel);
         }
 
         public void bind(Post post){
@@ -125,6 +133,18 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
                     .centerCrop()
                     .into(ivPicture);
 
+            ivPicture.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                   /* Intent i = new Intent(context, DetailActivity.class);
+                    i.putExtra("post", (Parcelable) post);
+                    context.startActivity(i);*/
+                    AppCompatActivity activity = (AppCompatActivity) context;
+                    Fragment myFragment = DetailFragment.newInstance(post, context);
+                    activity.getSupportFragmentManager().beginTransaction().replace(R.id.flContainer, myFragment).addToBackStack(null).commit();
+                }
+            });
+
             Glide.with(context)
                     .load(post.getUserProfilePic().getUrl())
                     .circleCrop()
@@ -138,6 +158,35 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
                     activity.getSupportFragmentManager().beginTransaction().replace(R.id.flContainer, myFragment).addToBackStack(null).commit();
                 }
             });
+
+            ibComment.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    showComments(post);
+                }
+            });
+
+            List<String> comments = post.getComments();
+            if(comments != null){
+                tvComments.setVisibility(View.VISIBLE);
+                tvComments.setText(String.format("View all %d comments", comments.size()));
+                tvComments.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        showComments(post);
+                    }
+                });
+            }else{
+                tvComments.setVisibility(View.GONE);
+            }
+        }
+
+        public void showComments(Post post){
+            FragmentManager fm = ((FragmentActivity)context).getSupportFragmentManager();
+            CommentsFragment fragment = CommentsFragment.newInstance(post, context);
+            fragment.position = getAdapterPosition();
+            fragment.newCommentListener = listener;
+            fragment.show(fm, "Comments Fragment");
         }
 
         public void changeLikeButton (boolean likeStatus, Post post){
