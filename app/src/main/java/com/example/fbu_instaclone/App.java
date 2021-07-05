@@ -3,6 +3,7 @@ package com.example.fbu_instaclone;
 import android.app.Application;
 import android.util.Log;
 
+import com.example.fbu_instaclone.model.Comment;
 import com.example.fbu_instaclone.model.Post;
 import com.parse.Parse;
 import com.parse.ParseObject;
@@ -16,6 +17,7 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         ParseObject.registerSubclass(Post.class);
+        ParseObject.registerSubclass(Comment.class);
         Parse.initialize(new Parse.Configuration.Builder(this)
                 .applicationId(getString(R.string.back4app_app_id))
                 .clientKey(getString(R.string.back4app_client_key))

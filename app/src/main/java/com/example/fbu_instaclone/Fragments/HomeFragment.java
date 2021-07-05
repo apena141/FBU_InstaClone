@@ -20,12 +20,14 @@ import com.example.fbu_instaclone.Adapter.PostAdapter;
 import com.example.fbu_instaclone.EndlessRecyclerViewScrollListener;
 import com.example.fbu_instaclone.MainActivity;
 import com.example.fbu_instaclone.R;
+import com.example.fbu_instaclone.model.Comment;
 import com.example.fbu_instaclone.model.Post;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class HomeFragment extends Fragment implements CommentsFragment.NewCommentListener {
@@ -34,6 +36,7 @@ public class HomeFragment extends Fragment implements CommentsFragment.NewCommen
     int lastPost;
     Context context;
     List<Post> posts;
+    List<Comment> commentList;
     RecyclerView rvPosts;
     PostAdapter adapter;
     SwipeRefreshLayout swipeContainer;
@@ -111,7 +114,7 @@ public class HomeFragment extends Fragment implements CommentsFragment.NewCommen
 
         lastPost = 0;
         queryPost();
-
+        commentList = new ArrayList<>();
     }
 
     protected void queryPost(){
@@ -131,9 +134,8 @@ public class HomeFragment extends Fragment implements CommentsFragment.NewCommen
                     lastPost = objects.size();
                     posts.clear();
                     posts.addAll(objects);
-                    adapter.notifyDataSetChanged();
+                    queryComments();
                     swipeContainer.setRefreshing(false);
-                    hideProgressBar();
                 }
             }
         });
@@ -168,5 +170,53 @@ public class HomeFragment extends Fragment implements CommentsFragment.NewCommen
         posts.remove(position);
         posts.add(position, post);
         adapter.notifyItemChanged(position);
+    }
+
+    public void queryComments(){
+        ParseQuery<Comment> query = ParseQuery.getQuery("Comment");
+        query.orderByDescending(Post.KEY_CREATED_AT);
+        query.findInBackground(new FindCallback<Comment>() {
+           @Override
+           public void done(List<Comment> objects, ParseException e) {
+               if(e == null) {
+                   commentList.clear();
+                   commentList.addAll(objects);
+                   setMapping(commentList);
+               }
+               else {
+                   Log.d(TAG, "Error: " + e.getMessage());
+               }
+
+           }
+       });
+    }
+
+    public void setMapping(List<Comment> comments){
+        HashMap<String, List<Comment>> mapping = new HashMap<>();
+        for(int i = 0; i < comments.size(); i++){
+            String key = comments.get(i).getPost().getObjectId();
+            if(mapping.containsKey(key)){
+                List<Comment> list = mapping.get(key);
+                list.add(comments.get(i));
+                mapping.put(key, list);
+            }
+            else {
+                List<Comment> list = new ArrayList<>();
+                list.add(comments.get(i));
+                mapping.put(key, list);
+            }
+        }
+
+        for(int i = 0; i < posts.size(); i++){
+            String currPost = posts.get(i).getObjectId();
+            if(mapping.containsKey(currPost)){
+                posts.get(i).comments = mapping.get(currPost);
+            }
+            else{
+                posts.get(i).comments = null;
+            }
+        }
+        hideProgressBar();
+        adapter.notifyDataSetChanged();
     }
 }

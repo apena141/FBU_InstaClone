@@ -25,6 +25,7 @@ import com.example.fbu_instaclone.Fragments.CommentsFragment;
 import com.example.fbu_instaclone.Fragments.DetailFragment;
 import com.example.fbu_instaclone.Fragments.ProfileFragment;
 import com.example.fbu_instaclone.R;
+import com.example.fbu_instaclone.model.Comment;
 import com.example.fbu_instaclone.model.Post;
 
 import java.util.Date;
@@ -136,9 +137,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
             ivPicture.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                   /* Intent i = new Intent(context, DetailActivity.class);
-                    i.putExtra("post", (Parcelable) post);
-                    context.startActivity(i);*/
                     AppCompatActivity activity = (AppCompatActivity) context;
                     Fragment myFragment = DetailFragment.newInstance(post, context);
                     activity.getSupportFragmentManager().beginTransaction().replace(R.id.flContainer, myFragment).addToBackStack(null).commit();
@@ -166,7 +164,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
                 }
             });
 
-            List<String> comments = post.getComments();
+            List<Comment> comments = post.comments;
             if(comments != null){
                 tvComments.setVisibility(View.VISIBLE);
                 tvComments.setText(String.format("View all %d comments", comments.size()));

@@ -23,11 +23,12 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.example.fbu_instaclone.Adapter.CommentsAdapter;
 import com.example.fbu_instaclone.R;
+import com.example.fbu_instaclone.model.Comment;
 import com.example.fbu_instaclone.model.Post;
-import com.parse.GetCallback;
 import com.parse.ParseException;
-import com.parse.ParseQuery;
+import com.parse.ParseObject;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +46,7 @@ public class CommentsFragment extends DialogFragment {
     CommentsAdapter adapter;
     Context context;
     Post post;
-    List<String> comments;
+    List<Comment> comments;
     ImageView ivProfilePic;
     Button btPost;
     EditText etComment;
@@ -88,7 +89,7 @@ public class CommentsFragment extends DialogFragment {
         rvComments.setLayoutManager(new LinearLayoutManager(context));
         rvComments.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL));
 
-        comments = post.getComments();
+        comments = post.comments;
         if(comments == null){
             comments = new ArrayList<>();
         }
@@ -113,10 +114,15 @@ public class CommentsFragment extends DialogFragment {
                    return;
                 }else{
                     String newComment = etComment.getText().toString();
-                    comments.add(comments.size(), newComment);
-                    addComments(comments);
+                    Comment entity = new Comment();
+                    entity.setBody(newComment);
+                    entity.setPost(post);
+                    entity.setUser(ParseUser.getCurrentUser());
+                    addComment(entity);
+                    comments.add(0, entity);
+                    post.comments = comments;
                     etComment.setText("");
-                    adapter.notifyItemInserted(comments.size() - 1);
+                    adapter.notifyItemInserted(0);
                 }
             }
         });
@@ -124,19 +130,14 @@ public class CommentsFragment extends DialogFragment {
         // END of Click Listeners
     }
 
-    public void addComments(List<String> comments){
-        ParseQuery<Post> query = ParseQuery.getQuery("Post");
-
-        query.include(Post.KEY_USER);
-        query.getInBackground(post.getObjectId(), new GetCallback<Post>() {
+    public void addComment(ParseObject comment){
+        comment.saveInBackground(new SaveCallback() {
             @Override
-            public void done(Post object, ParseException e) {
-                if(e == null) {
-                    object.put(Post.KEY_COMMENTS, comments);
-                    object.saveInBackground();
-                }
-                else{
-                    Log.d(TAG, "Exception: " + e.getMessage());
+            public void done(ParseException e) {
+                if(e == null){
+                    Log.d(TAG, "Saved comment");
+                }else{
+                    Log.e(TAG, "Error saving comment");
                 }
             }
         });

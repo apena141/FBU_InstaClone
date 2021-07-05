@@ -28,9 +28,7 @@ public class Post extends ParseObject {
     private static final int HOUR_MILLIS = 60 * MINUTE_MILLIS;
     private static final int DAY_MILLIS = 24 * HOUR_MILLIS;
 
-    public List<String> getComments(){
-        return getList(KEY_COMMENTS);
-    }
+    public List<Comment> comments;
 
     public void addComments(List<String> comments){
         put(KEY_COMMENTS, comments);
