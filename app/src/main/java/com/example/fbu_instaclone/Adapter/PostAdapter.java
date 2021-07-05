@@ -27,6 +27,8 @@ import com.example.fbu_instaclone.Fragments.ProfileFragment;
 import com.example.fbu_instaclone.R;
 import com.example.fbu_instaclone.model.Comment;
 import com.example.fbu_instaclone.model.Post;
+import com.parse.FindCallback;
+import com.parse.ParseException;
 
 import java.util.Date;
 import java.util.List;
@@ -164,19 +166,23 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
                 }
             });
 
-            List<Comment> comments = post.comments;
-            if(comments != null){
-                tvComments.setVisibility(View.VISIBLE);
-                tvComments.setText(String.format("View all %d comments", comments.size()));
-                tvComments.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        showComments(post);
+            post.getComments(new FindCallback<Comment>() {
+                @Override
+                public void done(List<Comment> objects, ParseException e) {
+                    if(objects != null && objects.size() > 0) {
+                        tvComments.setVisibility(View.VISIBLE);
+                        tvComments.setText(String.format("View all %d comments", objects.size()));
+                        tvComments.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                showComments(post);
+                            }
+                        });
+                    } else {
+                        tvComments.setVisibility(View.GONE);
                     }
-                });
-            }else{
-                tvComments.setVisibility(View.GONE);
-            }
+                }
+            });
         }
 
         public void showComments(Post post){

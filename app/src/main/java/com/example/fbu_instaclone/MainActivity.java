@@ -47,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
         getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
 
         fragmentManager = getSupportFragmentManager();
+        fragment = new HomeFragment(this);
         bottomNavigationView = findViewById(R.id.bottomNavigation);
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -68,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
+        fragmentManager.beginTransaction().replace(R.id.flContainer, fragment).commit();
     }
 
     @Override

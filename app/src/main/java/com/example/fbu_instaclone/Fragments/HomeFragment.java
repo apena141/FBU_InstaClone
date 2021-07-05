@@ -27,7 +27,6 @@ import com.parse.ParseException;
 import com.parse.ParseQuery;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class HomeFragment extends Fragment implements CommentsFragment.NewCommentListener {
@@ -54,12 +53,16 @@ public class HomeFragment extends Fragment implements CommentsFragment.NewCommen
 
     public void showProgressBar() {
         // Show progress item
-        bar.setVisible(true);
+        if(bar != null) {
+            bar.setVisible(true);
+        }
     }
 
     public void hideProgressBar() {
         // Hide progress item
-        bar.setVisible(false);
+        if(bar != null) {
+            bar.setVisible(false);
+        }
     }
 
     @Nullable
@@ -134,7 +137,8 @@ public class HomeFragment extends Fragment implements CommentsFragment.NewCommen
                     lastPost = objects.size();
                     posts.clear();
                     posts.addAll(objects);
-                    queryComments();
+                    adapter.notifyDataSetChanged();
+                    hideProgressBar();
                     swipeContainer.setRefreshing(false);
                 }
             }
@@ -181,7 +185,6 @@ public class HomeFragment extends Fragment implements CommentsFragment.NewCommen
                if(e == null) {
                    commentList.clear();
                    commentList.addAll(objects);
-                   setMapping(commentList);
                }
                else {
                    Log.d(TAG, "Error: " + e.getMessage());
@@ -189,34 +192,5 @@ public class HomeFragment extends Fragment implements CommentsFragment.NewCommen
 
            }
        });
-    }
-
-    public void setMapping(List<Comment> comments){
-        HashMap<String, List<Comment>> mapping = new HashMap<>();
-        for(int i = 0; i < comments.size(); i++){
-            String key = comments.get(i).getPost().getObjectId();
-            if(mapping.containsKey(key)){
-                List<Comment> list = mapping.get(key);
-                list.add(comments.get(i));
-                mapping.put(key, list);
-            }
-            else {
-                List<Comment> list = new ArrayList<>();
-                list.add(comments.get(i));
-                mapping.put(key, list);
-            }
-        }
-
-        for(int i = 0; i < posts.size(); i++){
-            String currPost = posts.get(i).getObjectId();
-            if(mapping.containsKey(currPost)){
-                posts.get(i).comments = mapping.get(currPost);
-            }
-            else{
-                posts.get(i).comments = null;
-            }
-        }
-        hideProgressBar();
-        adapter.notifyDataSetChanged();
     }
 }

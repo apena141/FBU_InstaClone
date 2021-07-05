@@ -25,6 +25,7 @@ import com.example.fbu_instaclone.Adapter.CommentsAdapter;
 import com.example.fbu_instaclone.R;
 import com.example.fbu_instaclone.model.Comment;
 import com.example.fbu_instaclone.model.Post;
+import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
@@ -88,15 +89,17 @@ public class CommentsFragment extends DialogFragment {
 
         rvComments.setLayoutManager(new LinearLayoutManager(context));
         rvComments.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL));
-
-        comments = post.comments;
-        if(comments == null){
-            comments = new ArrayList<>();
-        }
-
+        comments = new ArrayList<>();
         adapter = new CommentsAdapter(context, comments);
         rvComments.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
+
+        post.getComments(new FindCallback<Comment>() {
+            @Override
+            public void done(List<Comment> objects, ParseException e) {
+                comments.addAll(objects);
+                adapter.notifyDataSetChanged();
+            }
+        });
 
         Glide.with(context)
                 .load(ParseUser.getCurrentUser().getParseFile(Post.KEY_PROFILE_PIC).getUrl())
@@ -113,15 +116,9 @@ public class CommentsFragment extends DialogFragment {
                    etComment.setError("Cannot be empty");
                    return;
                 }else{
-                    String newComment = etComment.getText().toString();
-                    Comment entity = new Comment();
-                    entity.setBody(newComment);
-                    entity.setPost(post);
-                    entity.setUser(ParseUser.getCurrentUser());
-                    addComment(entity);
-                    comments.add(0, entity);
-                    post.comments = comments;
+                    Comment newComment = post.addComment(etComment.getText().toString(), null);
                     etComment.setText("");
+                    comments.add(0, newComment);
                     adapter.notifyItemInserted(0);
                 }
             }

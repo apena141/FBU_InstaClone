@@ -2,14 +2,16 @@ package com.example.fbu_instaclone.model;
 
 import android.util.Log;
 
+import com.parse.FindCallback;
 import com.parse.ParseClassName;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.List;
 import java.util.Locale;
 
 @ParseClassName("Post")
@@ -28,10 +30,22 @@ public class Post extends ParseObject {
     private static final int HOUR_MILLIS = 60 * MINUTE_MILLIS;
     private static final int DAY_MILLIS = 24 * HOUR_MILLIS;
 
-    public List<Comment> comments;
+    // public List<Comment> comments;
 
-    public void addComments(List<String> comments){
-        put(KEY_COMMENTS, comments);
+    public Comment addComment(String commentBody, SaveCallback callback){
+        Comment newComment = new Comment();
+        newComment.setUser(ParseUser.getCurrentUser());
+        newComment.setPost(this);
+        newComment.setBody(commentBody);
+        newComment.saveInBackground(callback);
+        return newComment;
+    }
+
+    public void getComments(FindCallback<Comment> callback) {
+        ParseQuery<Comment> query = ParseQuery.getQuery(Comment.class);
+        query.whereEqualTo(Comment.KEY_POST, this);
+        query.addDescendingOrder(Comment.KEY_CREATED_AT);
+        query.findInBackground(callback);
     }
 
     public String getDescription(){
