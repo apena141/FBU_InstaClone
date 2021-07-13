@@ -218,7 +218,7 @@ public class ProfileFragment extends HomeFragment {
     public void updateProfilePic(ParseFile profilePic) {
         ParseUser currentUser = ParseUser.getCurrentUser();
         if (currentUser != null) {
-            // Other attributes than "email" will remain unchanged!
+            // Every thing will remain the same except the profilePic column
             currentUser.put("profilePic", profilePic);
             // Saves the object.
             currentUser.saveInBackground(e -> {
